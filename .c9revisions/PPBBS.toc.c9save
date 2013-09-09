@@ -1,2 +1,0 @@
-{"ts":1378695433117,"silentsave":true,"restoring":false,"patch":[[{"diffs":[[1,"## Interface: 50300\r\n## Title: PPBBS\r\n## Notes: Kicking ass and filling bodybags, in no particular order.\r\n## Author: Pandayo\r\n## Version: 0.01\r\n\r\n##SavedVariables: squad\r\n\r\nmain.lua"]],"start1":0,"start2":0,"length1":0,"length2":182}]],"length":182}
-{"contributors":[],"silentsave":false,"ts":1378700405246,"patch":[[{"diffs":[[0,"s: squad"],[1,", bosses"],[0,"\r\n\r\nmain"]],"start1":162,"start2":162,"length1":16,"length2":24}]],"length":190,"saved":false}
