@@ -64,7 +64,7 @@ SlashCmdList["PPBBS"] = function(msg, editbox)
 	    bosses[name] = 0
 	    SendChatMessage("PPBBS: " .. name .. " has been registered as a boss.", CHANNEL, nil, channelID)
 	elseif command == "recap" then
-        recap
+        recap()
 	else
 		print("Syntax: /ppbbs (add|remove|recap) (name)")
 	end	
