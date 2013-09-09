@@ -1,0 +1,9 @@
+## Interface: 50300
+## Title: PPBBS
+## Notes: Kicking ass and filling bodybags, in no particular order.
+## Author: Pandayo
+## Version: 0.01
+
+##SavedVariables: squad, bosses
+
+main.lua
