@@ -1,8 +1,8 @@
 local function recap()
 	-- Calculate sum of everyone's deaths
-	local sumBags = 0
-	for name,bags in pairs(squad) do
-		sumBags = sumBags + bags
+	local sumDeaths = 0
+	for name,deaths in pairs(squad) do
+		sumDeaths = sumDeaths + deaths
 	end
 	
 	-- Calculate sum of boss deaths
@@ -12,17 +12,17 @@ local function recap()
     end
 
 	-- Find the maximum number of deaths
-	local maxBags = 0
-	for name,bags in pairs(squad) do
-		if bags > maxBags then
-			maxBags = bags
+	local maxDeaths = 0
+	for name,deaths in pairs(squad) do
+		if deaths > maxDeaths then
+			maxDeaths = deaths
 		end
 	end
 
 	-- Find who has this number of deaths
 	local maxNames = {}
-	for name,bags in pairs(squad) do
-		if bags == maxBags then
+	for name,deaths in pairs(squad) do
+		if deaths == maxDeaths then
 			table.insert(maxNames, name)
 		end
 	end
@@ -31,23 +31,44 @@ local function recap()
 	local listSize = table.getn(maxNames)
 	if listSize == 1 then
 		nameString = maxNames[1]
-		remainderString = ", with a whopping " .. maxBags .. " deaths!"
+		remainderString = ", with a whopping " .. maxDeaths .. " deaths!"
 	elseif listSize == 2 then
 		nameString = maxNames[1] .. " and " .. maxNames[2]
-		remainderString = " are tied with a remarkable " .. maxBags .. " deaths!"
+		remainderString = " are tied with a remarkable " .. maxDeaths .. " deaths!"
 	elseif listSize >= 3 then
 		for i=1,listSize-1,1 do
 			nameString = nameString .. maxNames[i] .. ", "
 		end
 		nameString = nameString .. "and " .. maxNames[listSize]
-		remainderString = " are all tied with an extraordinary " .. maxBags .. " deaths!"
+		remainderString = " are all tied with an extraordinary " .. maxDeaths .. " deaths!"
 	end
 
 	SendChatMessage("PPBBS Recap:", CHANNEL, nil, channelID)
-	SendChatMessage("Total bodybags this tier: " .. sumBags, CHANNEL, nil, channelID)
+	SendChatMessage("Total bodybags this tier: " .. sumDeaths, CHANNEL, nil, channelID)
 	SendChatMessage("Most frequent contributor of bag stuffing: " .. nameString .. remainderString, CHANNEL, nil, channelID)
 	SendChatMessage("Total bosses killed: " .. sumBosses, CHANNEL, nil, channelID)
-	SendChatMessage("Bodybag to boss ratio: " .. sumBosses/sumBags, CHANNEL, nil, channelID)
+	SendChatMessage("Bodybag to boss ratio: " .. sumBosses/sumDeaths, CHANNEL, nil, channelID)
+end
+
+local function = filter(_, event, msg, player, _, _, _, _, channelId, channelNum, _, _, lineId, guid, arg13)
+    if event == "CHAT_MSG_CHANNEL" then
+        if channelId == "Pandatest" or channelId = "RAID" then
+            if msg:match("^!ppbbs") ~= nil then
+                local _,arg = msg:match("^(%S*)%s*(.-)$")
+                if name == "" then
+                    recap()
+                else
+                    for name,deaths in pairs(squad) do
+                        if name == arg then
+                            SendChatMessage("PPBBS: " .. name .. " has successfully converted themselves into a paperweight " .. deaths .. " times this tier!  Good job!", CHANNEL, nil, channelId)
+                            break
+                        end
+                        SendChatMessage("PPBBS: A who what now?", CHANNEL, nil, channelId)
+                    end
+                end
+            end
+        end
+    end
 end
 
 SLASH_PPBBS1 = "/ppbbs"
@@ -63,8 +84,8 @@ SlashCmdList["PPBBS"] = function(msg, editbox)
 	elseif command == "register" and name ~= "" then
 	    bosses[name] = 0
 	    SendChatMessage("PPBBS: " .. name .. " has been registered as a boss.", CHANNEL, nil, channelID)
-	elseif command == "recap" then
-        recap
+	elseif command == "" then
+        recap()
 	else
 		print("Syntax: /ppbbs (add|remove|recap) (name)")
 	end	
@@ -100,11 +121,4 @@ Death_EventFrame:SetScript("OnEvent", function(self, gameEvent, timestamp, event
     end
 end)
 
-local Chat_EventFrame = CreateFrame("Frame")
-Chat_EventFrame:RegisterEvent("CHAT_MSG_CHANNEL")
-Chat_EventFrame:SetScript("OnEvent", function(self, gameEvent, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
-    if arg1 == "!ppbbs" then
-        message("arg1: " .. arg1 .. " // arg2: " .. arg2 .." // arg3: " .. arg3 .." // arg4: " .. arg4 .." // arg5: " .. arg5 .." // arg6: " .. arg6 .." // arg7: " .. arg7 .." // arg8: " .. arg8 .." // arg9: " .. arg9 .." // arg10: " .. arg10 .." // arg11: " .. arg11 .." // arg12: " .. arg12)
-    end
-end)
-        
+ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", filter)
