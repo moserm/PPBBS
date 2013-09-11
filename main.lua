@@ -43,31 +43,30 @@ local function recap()
 		remainderString = " are all tied with an extraordinary " .. maxDeaths .. " deaths!"
 	end
 
-	SendChatMessage("PPBBS Recap:", CHANNEL, nil, channelID)
-	SendChatMessage("Total bodybags this tier: " .. sumDeaths, CHANNEL, nil, channelID)
-	SendChatMessage("Most frequent contributor of bag stuffing: " .. nameString .. remainderString, CHANNEL, nil, channelID)
-	SendChatMessage("Total bosses killed: " .. sumBosses, CHANNEL, nil, channelID)
-	SendChatMessage("Bodybag to boss ratio: " .. sumBosses/sumDeaths, CHANNEL, nil, channelID)
+	SendChatMessage("PPBBS Recap:", "RAID", nil)
+	SendChatMessage("Total bodybags this tier: " .. sumDeaths, "RAID", nil)
+	SendChatMessage("Most frequent contributor of bag stuffing: " .. nameString .. remainderString, "RAID", nil)
+	SendChatMessage("Total bosses killed: " .. sumBosses, "RAID", nil)
+	SendChatMessage("Bodybag to boss ratio: " .. sumBosses/sumDeaths, "RAID", nil)
 end
 
-local function = filter(_, event, msg, player, _, _, _, _, channelId, channelNum, _, _, lineId, guid, arg13)
-    if event == "CHAT_MSG_CHANNEL" then
-        if channelId == "Pandatest" or channelId = "RAID" then
-            if msg:match("^!ppbbs") ~= nil then
-                local _,arg = msg:match("^(%S*)%s*(.-)$")
-                if name == "" then
-                    recap()
-                else
-                    for name,deaths in pairs(squad) do
-                        if name == arg then
-                            SendChatMessage("PPBBS: " .. name .. " has successfully converted themselves into a paperweight " .. deaths .. " times this tier!  Good job!", CHANNEL, nil, channelId)
-                            break
-                        end
-                        SendChatMessage("PPBBS: A who what now?", CHANNEL, nil, channelId)
-                    end
-                end
-            end
-        end
+--local function filter(_, event, msg, player, _, _, _, _, channelId, channelNum, _, _, lineId, guid, arg13)
+local function filter(_, event, msg, player, ...)
+    if event == "CHAT_MSG_RAID" then
+		if msg:match("^!ppbbs") ~= nil then
+			local _,arg = msg:match("^(%S*)%s*(.-)$")
+			if name == "" then
+				recap()
+			else
+				for name,deaths in pairs(squad) do
+					if name == arg then
+						SendChatMessage("PPBBS: " .. name .. " has successfully converted themselves into a paperweight " .. deaths .. " times this tier!  Good job!", "RAID", nil)
+						break
+					end
+					SendChatMessage("PPBBS: A who what now?", "RAID", nil)
+				end
+			end
+		end
     end
 end
 
@@ -121,4 +120,4 @@ Death_EventFrame:SetScript("OnEvent", function(self, gameEvent, timestamp, event
     end
 end)
 
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", filter)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", filter)
