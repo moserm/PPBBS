@@ -1,14 +1,3 @@
-testing = 1
-
-local function post(msg)
-	local channelID,_ = GetChannelName("Pandatest")
-	if testing == 0 then
-		SendChatMessage(msg, "RAID", nil)
-	elseif testing == 1 then
-		SendChatMessage(msg, CHANNEL, nil, channelID)
-	end
-end
-
 local function recap()
 	-- Calculate sum of everyone's deaths
 	local sumDeaths = 0
@@ -54,15 +43,15 @@ local function recap()
 		remainderString = " are all tied with an extraordinary " .. maxDeaths .. " deaths!"
 	end
 
-	post("PPBBS Recap!")
-	post("Total deaths this tier: " .. sumDeaths)
-	post("Top performer: " .. nameString .. remainderString)
+	SendChatMessage("PPBBS Recap!", "RAID", nil)
+	SendChatMessage("Total deaths this tier: " .. sumDeaths, "RAID", nil)
+	SendChatMessage("Top performer: " .. nameString .. remainderString, "RAID", nil)
 end
 
 local function list()
-	post("PPBBS Bodybag Count:")
+	SendChatMessage("PPBBS Bodybag Count:", "RAID", nil)
 	for name,deaths in pairs(squad) do
-		post(name .. ": " .. deaths)
+		SendChatMessage(name .. ": " .. deaths, "RAID", nil)
 	end
 end
 
@@ -70,14 +59,16 @@ local function search(query)
 	local found = 0
 	for name,deaths in pairs(squad) do
 		if name == query then
-			post(name .. " has died " .. deaths .. " times!")
+			SendChatMessage(name .. " has died " .. deaths .. " times!", "RAID", nil)
 			found = 1
 		end
 		if found == 0 then
-			post("Ain't nobody in BBS with that name, yo")
+			SendChatMessage("Ain't nobody in BBS with that name, yo", "RAID", nil)
 		end
 	end
 end
+
+-- ^%a+%s(%a+)%s(%a+)$
 
 local function filter(_, event, msg, player, ...)
     if event == "CHAT_MSG_RAID" or event == "CHAT_MSG_CHANNEL" then
@@ -99,10 +90,10 @@ SlashCmdList["PPBBS"] = function(msg, editbox)
 	local command, name = msg:match("^(%S*)%s*(.-)$")
 	if command == "add" and name ~= "" then
 		squad[name] = 0
-		post("PPBBS: " .. name .. " has been added to the roster.")
+		SendChatMessage("PPBBS: " .. name .. " has been added to the roster.", "RAID", nil)
 	elseif command == "remove" and name ~= "" then
 		squad[name] = nil
-		post("PPBBS: " .. name .. " has been removed from the roster.")
+		SendChatMessage("PPBBS: " .. name .. " has been removed from the roster.", "RAID", nil)
 	else
 		print("Syntax: /ppbbs (add|remove|recap) (name)")
 	end	
@@ -134,4 +125,3 @@ Death_EventFrame:SetScript("OnEvent", function(_, _, _, event, _, _, _, _, _, _,
 end)
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", filter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", filter)
