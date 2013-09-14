@@ -1,19 +1,30 @@
+testing = 1
+
+local function post(msg)
+	local channelID,_ = GetChannelName("Pandatest")
+	if testing == 0 then
+		SendChatMessage(msg, "RAID", nil)
+	elseif testing == 1 then
+		SendChatMessage(msg, CHANNEL, nil, channelID)
+	end
+end
+
 local function recap()
 	-- Calculate sum of everyone's deaths
 	local sumDeaths = 0
-	for name,deaths in pairs(squad) do
+	for _,deaths in pairs(squad) do
 		sumDeaths = sumDeaths + deaths
 	end
 	
 	-- Calculate sum of boss deaths
 	local sumBosses = 0
-	for boss,deaths in pairs(bosses) do
+	for _,deaths in pairs(bosses) do
 	    sumBosses = sumBosses + deaths
     end
 
 	-- Find the maximum number of deaths
 	local maxDeaths = 0
-	for name,deaths in pairs(squad) do
+	for _,deaths in pairs(squad) do
 		if deaths > maxDeaths then
 			maxDeaths = deaths
 		end
@@ -43,48 +54,55 @@ local function recap()
 		remainderString = " are all tied with an extraordinary " .. maxDeaths .. " deaths!"
 	end
 
-	SendChatMessage("PPBBS Recap:", "RAID", nil)
-	SendChatMessage("Total bodybags this tier: " .. sumDeaths, "RAID", nil)
-	SendChatMessage("Most frequent contributor of bag stuffing: " .. nameString .. remainderString, "RAID", nil)
-	SendChatMessage("Total bosses killed: " .. sumBosses, "RAID", nil)
-	SendChatMessage("Bodybag to boss ratio: " .. sumBosses/sumDeaths, "RAID", nil)
+	post("PPBBS Recap!")
+	post("Total deaths this tier: " .. sumDeaths)
+	post("Top performer: " .. nameString .. remainderString)
 end
 
---local function filter(_, event, msg, player, _, _, _, _, channelId, channelNum, _, _, lineId, guid, arg13)
+local function list()
+	post("PPBBS Bodybag Count:")
+	for name,deaths in pairs(squad) do
+		post(name .. ": " .. deaths)
+	end
+end
+
+local function search(query)
+	local found = 0
+	for name,deaths in pairs(squad) do
+		if name == query then
+			post(name .. " has died " .. deaths .. " times!")
+			found = 1
+		end
+		if found == 0 then
+			post("Ain't nobody in BBS with that name, yo")
+		end
+	end
+end
+
 local function filter(_, event, msg, player, ...)
-    if event == "CHAT_MSG_RAID" then
-		if msg:match("^!ppbbs") ~= nil then
-			local _,arg = msg:match("^(%S*)%s*(.-)$")
-			if name == "" then
+    if event == "CHAT_MSG_RAID" or event == "CHAT_MSG_CHANNEL" then
+		if msg:match("^!ppbbs") then
+			local cmd = msg:match("^%S*%s*(.-)$")
+			if cmd == '' then
 				recap()
+			elseif cmd == 'all' then
+				list()
 			else
-				for name,deaths in pairs(squad) do
-					if name == arg then
-						SendChatMessage("PPBBS: " .. name .. " has successfully converted themselves into a paperweight " .. deaths .. " times this tier!  Good job!", "RAID", nil)
-						break
-					end
-					SendChatMessage("PPBBS: A who what now?", "RAID", nil)
-				end
+				search(cmd)
 			end
 		end
-    end
+	end
 end
 
 SLASH_PPBBS1 = "/ppbbs"
 SlashCmdList["PPBBS"] = function(msg, editbox)
 	local command, name = msg:match("^(%S*)%s*(.-)$")
-	local channelID, channelName = GetChannelName("Pandatest")
 	if command == "add" and name ~= "" then
 		squad[name] = 0
-		SendChatMessage("PPBBS: " .. name .. " has been added to the roster.", CHANNEL, nil, channelID)
+		post("PPBBS: " .. name .. " has been added to the roster.")
 	elseif command == "remove" and name ~= "" then
 		squad[name] = nil
-		SendChatMessage("PPBBS: " .. name .. " has been removed from the roster.", CHANNEL, nil, channelID)
-	elseif command == "register" and name ~= "" then
-	    bosses[name] = 0
-	    SendChatMessage("PPBBS: " .. name .. " has been registered as a boss.", CHANNEL, nil, channelID)
-	elseif command == "" then
-        recap()
+		post("PPBBS: " .. name .. " has been removed from the roster.")
 	else
 		print("Syntax: /ppbbs (add|remove|recap) (name)")
 	end	
@@ -105,19 +123,15 @@ end)
 
 local Death_EventFrame = CreateFrame("Frame")
 Death_EventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-Death_EventFrame:SetScript("OnEvent", function(self, gameEvent, timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+Death_EventFrame:SetScript("OnEvent", function(_, _, _, event, _, _, _, _, _, _, destName, ...)
 	if event == "UNIT_DIED" then
 		for v,_ in pairs(squad) do
 			if v == destName then
 				squad[destName] = squad[destName] + 1
 			end
 		end
-        for v,_ in pairs(bosses) do
-            if v == destName then
-                bosses[destName] = bosses[destName] + 1
-            end
-        end
     end
 end)
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", filter)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", filter)

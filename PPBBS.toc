@@ -4,6 +4,6 @@
 ## Author: Pandayo
 ## Version: 0.01
 
-##SavedVariables: squad, bosses
+##SavedVariables: squad
 
 main.lua

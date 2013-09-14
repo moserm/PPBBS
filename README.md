@@ -8,14 +8,7 @@ Functionality:
 - Respond to !ppbbs commands in raid chat
 - '!ppbbs' alone posts a recap for the entire tier
 - '!ppbbs [name]' posts a string announcing that players bodybag count, if that player is registered to the roster
-- '!ppbbs add [name]' will register that player to the BBS roster, enabling death tracking
-- '!ppbbs register [name]' will register a boss to the list of raid bosses, enabling kill tracking
-
-To-do list:
-
-- Reimplement player and boss registration by player target.
-- Use a single command '!ppbbs add' to add either a player to the player variable or a boss to the boss variable.
-- The two can be distinguished by whether or not the target is friendly or hostile.
+- '!ppbbs add' will register the targeted player to the BBS roster, enabling death tracking
 
 Enhancements:
 
